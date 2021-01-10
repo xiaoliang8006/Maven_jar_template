@@ -37,7 +37,7 @@
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
-                        <descriptor>release.xml</descriptor>
+                        <descriptor>m_s.xml</descriptor>
                     </descriptors>
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
