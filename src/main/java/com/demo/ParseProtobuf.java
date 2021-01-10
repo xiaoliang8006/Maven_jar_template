@@ -10,8 +10,8 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  *
- * 对字符串进行加解密和加解压
- * @author wujh
+ * 解析加密protobuf样本
+ * @author ericoliang
  *
  */
 @SuppressWarnings("restriction")
@@ -39,6 +39,7 @@ public class ParseProtobuf {
         }
         catch (Exception ex){
         }
+
         return "";
     }
 
@@ -48,7 +49,7 @@ public class ParseProtobuf {
      * @return
      */
 
-    public static byte[] DecompressToBase64(String textToDecode){
+    public static byte[] DecompressFromBase64(String textToDecode){
         //String textToDecode = "H4sIAAAAAAAAAPNIzcnJBwCCidH3BQAAAA==\n";
         try {
             byte[] compressed = Base64.getDecoder().decode(textToDecode);
@@ -61,6 +62,9 @@ public class ParseProtobuf {
             while ((bytesRead = gis.read(data)) != -1) {
                 baos.write(data, 0, bytesRead);
             }
+            inputStream.close();
+            gis.close();
+            baos.close();
             return baos.toByteArray();
         }
         catch (IOException e) {
@@ -71,8 +75,9 @@ public class ParseProtobuf {
         return new byte[0];
     }
 
-    public static String ParseProtobufStruct(byte[] pbStruct){
+    public static String ParseProtobufStruct(String pbString){
         try {
+            byte[] pbStruct = DecompressFromBase64(pbString);
             SampleOuterClass.Sample mySample = SampleOuterClass.Sample.parseFrom(pbStruct);
             return mySample.getRequestFeature().getGuid();
         } catch (InvalidProtocolBufferException e){
@@ -91,7 +96,7 @@ public class ParseProtobuf {
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String lineTxt = null;
                 while ((lineTxt = bufferedReader.readLine()) != null) {
-                    String result = ParseProtobufStruct(DecompressToBase64(lineTxt));
+                    String result = ParseProtobufStruct(lineTxt);
                     System.out.println(result);
                 }
                 bufferedReader.close();

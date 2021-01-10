@@ -64,6 +64,7 @@ tencent/tkd/qbfeed/SampleOuterClass$NewsDynamicFeature$1.class
 tencent/tkd/qbfeed/SampleOuterClass$NewsDynamicFeature$VersionedAttentionCtrinfoDefaultEntryHolder.class
 tencent/tkd/qbfeed/SampleOuterClass$TagCtrOrBuilder.class
 tencent/tkd/qbfeed/SampleOuterClass$EmbeddingFeatureOrBuilder.class
+com/demo/MyFormatter.class
 tencent/tkd/qbfeed/SampleOuterClass$RecallStrategyRankInfo.class
 tencent/tkd/qbfeed/SampleOuterClass$VideoAssembleFeature$1.class
 com/demo/ParseProtobuf.class
@@ -98,6 +99,7 @@ tencent/tkd/qbfeed/SampleOuterClass$LatestHisItem$Builder.class
 tencent/tkd/qbfeed/SampleOuterClass$BehaviorPropertyPlayTime$1.class
 tencent/tkd/qbfeed/SampleOuterClass$UserlikeInfo$1.class
 tencent/tkd/qbfeed/SampleOuterClass$UserlikeInfo.class
+com/demo/MySparkRun.class
 tencent/tkd/qbfeed/SampleOuterClass$AITopicInfoOrBuilder.class
 tencent/tkd/qbfeed/SampleOuterClass$VideoAssembleFeature$Builder.class
 tencent/tkd/qbfeed/SampleOuterClass$AttentionFeature$1.class
