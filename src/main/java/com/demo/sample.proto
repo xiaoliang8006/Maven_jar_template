@@ -1,0 +1,536 @@
+syntax = "proto3";
+package tencent.tkd.qbfeed;
+//package  pb_feature_lib;
+
+message Sample {
+	RequestFeature request_feature = 1;
+	UserFeature user_feature = 2;
+	SessionFeature session_feature = 3;
+	repeated ContentFeature content_feature = 4;
+}
+
+
+message AttentionFeature {
+    int32 type = 1;
+    float value = 2;
+}
+
+message AttentionPoint {
+    string key = 1;
+    //AttentionPoint.sKey 兴趣点ID
+    float weight = 2;
+    //AttentionPoint.fWeight 兴趣点打分 fWeight 0~1
+    int32 attn_source = 3;
+    //AttentionPoint.bAttnSource bit位标识兴趣点来源 ATTN_SOURCE_BIT
+    repeated AttentionFeature features = 4;
+    //AttentionPoint.mFeature raw feature
+}
+
+message UserProfile {
+    int32 age = 1;
+    int32 sex = 2;
+    int32 city = 3;
+    int32 city_level = 4;
+    int32 platform = 5;
+    int32 constellation = 6;
+    int32 edu = 7;
+    int32 life_state = 8;
+    int32 trade = 9;                            // 行业
+    int32 income_level = 10;                    // 收入
+    string company_location = 11;               // 企业所在商圈
+    string company_name = 12;                   // 企业名称
+    int64 mobile_name = 13;                     // 手机名称
+    int64 mobile_brand = 14;                    // 手机品牌
+    string mobile_price = 15;                   // 手机价位
+    map<string, string> active_apps = 16;
+    repeated string installed_apps = 17;
+    repeated string concern_accs = 18;
+}
+
+message UserFeature {
+    UserProfile user_profile = 1;
+    //mpUserProfile 中解析用户基础属性：包含性别，年龄，地域信息等
+    repeated float user_vec = 2;
+    //vNewsUserVec 用户语义向量
+    repeated float user_vec_new_sub = 3;
+    //vNewsUserVecNewSub 图文新主题语义向量
+    repeated float user_vec_new_sub_exp = 4;
+    //vVideoUserVecNewSubExp 用户新主题语义向量实验字段  ——暂时没有使用
+    repeated float user_vec_inner = 5;
+    //vNewsUserVecInner 图文内积语义向量
+
+    repeated AttentionPoint tag_attens = 20;
+    //mpUserModel[ATTN_TAG] 图文tag兴趣点
+    repeated AttentionPoint account_attens = 21;
+    //mpUserModel[ATTN_ACCOUNT] 图文账号兴趣点
+    repeated AttentionPoint subject_attens = 22;
+    //mpUserModel[ATTN_SUBJECT] 图文主题兴趣点
+    repeated AttentionPoint subject_new_attens = 23;
+    //mpUserModel[NEWS_SUBJECT_NEW] 图文新主题兴趣点
+    repeated AttentionPoint video_tag_attens = 24;
+    //mpUserModel[VIDEO_ATTN_TAG] 短视频tag兴趣点
+    repeated AttentionPoint video_account_attens = 25;
+    //mpUserModel[VIDEO_ATTN_ACCOUNT] 短视频账号兴趣点
+    repeated AttentionPoint video_subject_attens = 26;
+    //mpUserModel[VIDEO_ATTN_SUBJECT] 短视频主题兴趣点
+    repeated AttentionPoint video_subject_new_attens = 27;
+    //mpUserModel[VIDEO_SUBJECT_NEW] 短视频新主题兴趣点
+    repeated AttentionPoint mini_video_tag_attens = 28;
+    //mpUserModel[MVIDEO_ATTN_TAG] 小视频tag兴趣点
+    repeated AttentionPoint mini_subject_new_attens = 29;
+    //mpUserModel[MVIDEO_SUBJECT_NEW] 小视频新主题兴趣点
+}
+
+
+message TagCtrInfo {
+    double tags_ctr_avg = 1;                                   // 文章所有tag词平均ctr
+    double tags_ctr_max = 2;                                   // 文章最大tag词ctr
+}
+
+message NewsDynamicFeature {
+    int32 exposure_total = 1;
+    //feature::DocFeature.dynamicFeature.exposureTotal 总曝光
+    int32 click_total = 2;
+    //feature::DocFeature.dynamicFeature.clickTotal 总点击
+    double domain_ctr = 3;
+    //feature::DocFeature.dynamicFeature.domainCtr 域名ctr
+    double source_ctr = 4;
+    //feature::DocFeature.dynamicFeature.sourceCtr 来源ctr
+    map<int32, TagCtrInfo> versioned_attention_ctrinfo = 5;
+    //feature::DocFeature.dynamicFeature.versionedAttentionCtrInfo 多版本attention ctr特征 map的key和request.bucket_testids一致
+    double tags_ctr_max = 6;
+    //feature::DocFeature.dynamicFeature.tagsCtrMax 文章最大tag词ctr
+    double tags_ctr_avg = 7;
+    //feature::DocFeature.dynamicFeature.tagsCtrAvg 文章所有tag词平均ctr
+    int32 comment_num = 8;
+    //feature::DocFeature.dynamicFeature.commentNum 评论数
+    int32 share_num = 9;
+    //feature::DocFeature.dynamicFeature.shareNum 分享数
+    int32 praise_num = 10;
+    //feature::DocFeature.dynamicFeature.praiseNum 点赞数
+    int32 collect_num = 11;
+    //feature::DocFeature.dynamicFeature.collectNum 收藏数
+    int32 comment_positive = 12;
+    //feature::DocFeature.dynamicFeature.commentPositive 正向评论数
+    int32 comment_negative = 13;
+    //feature::DocFeature.dynamicFeature.commentNegative 负向评论数
+    int32 praise_oncomment_num = 14;
+    //feature::DocFeature.dynamicFeature.praiseOnCommentNum 评论的点赞数
+    int32 bigdata_level = 15;
+    //feature::DocFeature.dynamicFeature.bigDataLevel 大数据文章评级
+    int64 read_total_time = 16;
+    //feature::DocFeature.dynamicFeature.readTotalTime 总阅读时长(s)
+    int32 read_total_num = 17;
+    //feature::DocFeature.dynamicFeature.readTotalNum 总阅读次数
+    int64 read_total_ratio = 18;
+    //feature::DocFeature.dynamicFeature.readTotalRatio 阅读完成率和
+    int32 feedback_num = 19;
+    //feature::DocFeature.dynamicFeature.feedbackNum 负反馈数
+    uint32 float_next_num = 20;
+    //feature::DocFeature.dynamicFeature.floatNextNum 带来的后续消费次数
+    int64 float_play_total_time = 21;
+    //feature::DocFeature.dynamicFeature.floatPlayTotalTime 带来的后续消费时长
+}
+
+// tag词静态信息
+message TagInfomation {
+    int64 tag_id = 1;
+    string tag_name = 2;
+    double weight = 3;
+    int32 type = 4;
+};
+
+message TagInfomations {
+    repeated TagInfomation tag_infos = 1;
+}
+
+// 男女倾向性
+message UserlikeInfo {
+    int32 id = 1;       // 1是女性 2是男性
+    int32 value = 2;    // 1喜欢，0不喜欢，2无倾向
+    float prob = 3;     // 喜欢的概率值
+};
+
+// AI平台部输出的文章topic信息
+message AITopicInfo {
+    int32 topic_id = 1; // topic id
+    float weight = 2;   // 权重
+};
+
+message NewsStaticFeature {
+    int32 thumbnail_num = 1;
+    //feature::DocFeature.staticFeature.thumbnailNum 缩略图个数(线上改为使用contentCenterHdImageNum字段)
+    int32 content_img_num = 2;
+    //feature::DocFeature.staticFeature.contentImgNum 正文图片数
+    int32 title_length = 3;
+    //feature::DocFeature.staticFeature.titleLength 标题长度
+    int32 content_length = 4;
+    //feature::DocFeature.staticFeature.contentLength 正文长度
+    string source = 5;
+    //feature::DocFeature.staticFeature.source 来源
+    int64 publish_time = 6;
+    //feature::DocFeature.staticFeature.publishTime 发布时间
+    double quality_score = 7;
+    //feature::DocFeature.staticFeature.qualityScore 质量得分
+    float account_score = 8;
+    //feature::DocFeature.staticFeature.accountScore 帐号得分
+    double title_prectr = 9;
+    //feature::DocFeature.staticFeature.titlePreCtr 标题预估ctr
+    string subject = 10;
+    //feature::DocFeature.staticFeature.subject 主题/类别
+    string new_subject = 11;
+    //feature::DocFeature.staticFeature.newSubject 新主题
+    float account_level = 12;
+    //feature::DocFeature.staticFeature.accountLevel 帐号等级：0-普通; 1:4级权威帐号 2:5级权威帐号;3:6级权威帐号 -1:低质帐号】
+    int32 real_account_level = 13;
+    //feature::DocFeature.staticFeature.realAccountLevel 实际帐号等级：0-5
+    int32 kol_type = 14;
+    //feature::DocFeature.staticFeature.kolType kol类型: 0-非kol; 1-kol
+    int32 content_type = 15;                                   // 内容类型:
+    //feature::DocFeature.staticFeature.contentType
+    // -1:快照不存在 1. text/pic 2. 带视频的图文  3. slide 4. 问答 5. 漫画, 6.短消息, 
+    // 7.音频 8. 短视频 9. 小视频 10. 小说 11. 热门事件（热门专题）12. 精品栏目
+    map<int32, string> map_expand = 16;
+    //feature::DocFeature.staticFeature.mapExpand 快照透传字段,只有配置map-expand-use-keys,才能通过特征使用
+    //只保留了key=320的特征
+    repeated TagInfomation tag_infos = 17;
+    //feature::DocFeature.staticFeature.tagInfoVec 文章tag词信息
+    repeated float news_title_embeddings = 18;
+    //feature::DocFeature.staticFeature.newsTitleEmbedding 内容中心图文标题预训练向量
+    //只保留了key=0的特征
+    map<int32, TagInfomations> version_tag_ags = 19;
+    //feature::DocFeature.staticFeature.multiVersionTagAg NLP多版本灰度TagAg(key:Version val:TagAg)
+    //map的key和request.bucket_testids一致
+    repeated UserlikeInfo user_like_infos = 20;
+    //feature::DocFeature.staticFeature.userLikeInfos 男女倾向性
+    //只保留了key=0的特征
+    repeated AITopicInfo ai_topic_infos = 21;
+    //feature::DocFeature.staticFeature.aiTopicInfos AI平台部输出的文章topic信息
+    //只保留了key=0的特征
+}
+
+// 文章组合特征
+message BehaviorProperty {
+    int32 exposure = 1;
+    int32 click = 2;
+};
+
+// 时长组合特征
+message BehaviorPropertyPlayTime {
+    int32 accumulated_playtime = 1;
+};
+
+message NewsAssembleFeature {
+    repeated BehaviorProperty behavior_propertys = 1;
+    //feature::DocFeature.assembleFeature.behaviorPropertyVec
+    repeated BehaviorProperty behavior_new_sims = 2;
+    //feature::DocFeature.assembleFeature.behaviorNewSimVec 新主题相似度分档特征等
+}
+
+message NewsFeature {
+    NewsDynamicFeature dynamic_feature = 1;                    // 动态特征
+    NewsStaticFeature static_feature = 2;                      // 静态特征
+    NewsAssembleFeature assemble_feature = 3;                  // 组合特征
+}
+
+message VideoDynamicFeature {
+    int32 main_exposure = 1;
+    //videofeature::VideoDynamicFeature.mainExposure 看热点曝光
+    int32 main_click = 2;
+    //videofeature::VideoDynamicFeature.mainClick 看热点点击
+    int32 feeds_exposure = 3;
+    //videofeature::VideoDynamicFeature.feedsExposure 视频秀曝光
+    int32 feeds_click = 4;
+    //videofeature::VideoDynamicFeature.feedsClick 视频秀点击
+    int32 float_exposure = 5;
+    //videofeature::VideoDynamicFeature.floatExposure 浮层曝光
+    int32 float_click = 6;
+    //videofeature::VideoDynamicFeature.floatClick 浮层点击
+    int32 comment_num = 7;
+    //videofeature::VideoDynamicFeature.commentNum 评论数
+    int32 share_num = 8;
+    //videofeature::VideoDynamicFeature.shareNum 分享数
+    int32 praise_num = 9;
+    //videofeature::VideoDynamicFeature.praiseNum 点赞数
+    int32 feedback_num = 10;
+    //videofeature::VideoDynamicFeature.feedbackNum 负反馈数
+    int32 comment_posi_num = 11;
+    //videofeature::VideoDynamicFeature.commentPosiNum 正向评论数
+    int32 comment_nega_num = 12;
+    //videofeature::VideoDynamicFeature.commentNegaNum 负向评论数
+    int32 main_first_play_times = 13;
+    //videofeature::VideoDynamicFeature.mainFirstPlayTimes 看热点播放时长分档1
+    int64 main_play_total_time = 14;
+    //videofeature::VideoDynamicFeature.mainPlayTotalTime 看热点播放时长总和(s)
+    int64 main_video_total_time = 15;
+    //videofeature::VideoDynamicFeature.mainVideoTotalTime 看热点视频时长总和(s)
+    int32 float_total_exposure = 16;
+    //videofeature::VideoDynamicFeature.floatTotalExposure 浮层视频累计曝光总量(不去重）（累计浮层转化特征到feed引导视频）
+    int64 float_total_time = 17;
+    //videofeature::VideoDynamicFeature.floatTotalTime 浮层视频累计时长（不去重）（累计浮层转化特征到feed引导视频）
+    int64 float_total_physical_time = 18;                       
+    //videofeature::VideoDynamicFeature.floatTotalPhysicalTime 浮层视频累计播放视频的物理时长（去重）（累计浮层转化特征到feed引导视频）
+    int64 float_uni_video_total_time = 19;
+    //videofeature::VideoDynamicFeature.floatUniVideoTotalTime 浮层去重播放视频时长总和(s)
+    int64 float_uni_play_total_time = 20;
+    //videofeature::VideoDynamicFeature.floatUniPlayTotalTime 浮层去重播放时长总和(s)
+    int32 float_uni_exposure_ext = 21;
+    //videofeature::VideoDynamicFeature.floatUniExposureExt 浮层去重扩展曝光
+    int32 float_click_c = 22;
+    //videofeature::VideoDynamicFeature.floatClickC 浮层扩展点击C
+}
+
+// tag词动态信息
+message TagCtr {
+    int64 tag_id = 1;                                           // tag id
+    int32 exposure = 2;                                         // 曝光次数
+    int32 click = 3;                                            // 点击次数
+    int64 total_play_time = 4;                                  // 总播放时长
+    double avg_complete_ratio = 5;                              // 平均完成率
+}
+
+// 曝光-点击-播放完成率
+message ECRatio {
+    uint32 expose = 1;                                          // 曝光次数
+    uint32 click = 2;                                           // 点击次数
+    uint32 playtime = 3;                                        // 播放时长
+    float ratio = 4;                                            // 播放完成率
+}
+
+message VideoStaticFeature {
+    int64 publish_time = 1;
+    //videofeature::VideoStaticFeature.publishTime 发布时间
+    string media_id = 2;
+    //videofeature::VideoStaticFeature.mediaId 媒体号
+    repeated TagInfomation tag_infos = 3;
+    //videofeature::VideoStaticFeature.tagInfoVec 文章tag词信息
+    string title_sep_item = 4;
+    //videofeature::VideoStaticFeature.titleSepItem 标题分词: 热点_weight;热点_weight;
+    double title_pre_ctr = 5;
+    //videofeature::VideoStaticFeature.titlePreCtr 标题预估ctr
+    int32 run_time = 6;
+    //videofeature::VideoStaticFeature.runTime 视频时长
+    repeated TagCtr main_tag_ctrs = 7;
+    //videofeature::VideoStaticFeature.mainTagCtrVec 看热点tag词ctr情况
+    int32 main_media_exposure = 8;
+    //videofeature::VideoStaticFeature.mainMediaExposure 看热点媒体号曝光
+    int32 main_media_click = 9;
+    //videofeature::VideoStaticFeature.mainMediaClick 看热点媒体号点击
+    int32 title_length = 10;
+    //videofeature::VideoStaticFeature.titleLength 视频标题长度
+    int32 video_clarity = 11;
+    //videofeature::VideoStaticFeature.videoClarity 视频清晰度 0-未知 1-模糊 2-普通 3-清晰
+    int32 video_img_quality = 12;
+    //videofeature::VideoStaticFeature.videoImgQuality 视频封面图清晰度
+    int32 video_quality_score = 13;
+    //videofeature::VideoStaticFeature.videoQualityScore 视频质量得分
+    int32 is_mini_video = 14;
+    //videofeature::VideoStaticFeature.isMiniVideo 0-非小视频, 1-小视频
+    int32 is_minihq_video = 15;
+    //videofeature::VideoStaticFeature.isMiniHqVideo 0-非精排小视频, 1-精品小视频
+    int32 main_media_total_playtime = 16;
+    //videofeature::VideoStaticFeature.mainMediaTotalPlayTime 看热点媒体号累计播放时长
+    float main_media_avg_complete_ratio = 17;
+    //videofeature::VideoStaticFeature.mainMediaAvgCompleteRatio 看热点媒体号平均播放完成率
+    string new_subject = 18;
+    //videofeature::VideoStaticFeature.newSubject 新主题
+    map<int32, ECRatio> new_sub_ec_ratio = 19;
+    //videofeature::VideoStaticFeature.newSubECRatio 新主题曝光-点击-播放完成率
+    map<string, string> experiments = 20;
+    //videofeature::VideoStaticFeature.experiments 快照保证个数
+    map<int64, int64> character_preference = 21;
+    //videofeature::VideoStaticFeature.characterPreference 先验偏好属性
+    //只保留了key=0的特征
+    repeated UserlikeInfo user_like_infos = 22;
+    //videofeature::VideoStaticFeature.userLikeInfo 男女倾向性
+    //只保留了key=0的特征
+    repeated float video_cover_embeddings = 23;
+    //videofeature::VideoStaticFeature.videoCoverEmbedding 内容中心视频封面预训练向量
+    //只保留了key=0的特征
+    repeated float video_embeddings = 24;
+    //videofeature::VideoStaticFeature.videoEmbedding 内容中心视频本身预训练向量
+    //只保留了key=0的特征
+    int32 float_media_exposure = 25;
+    //videofeature::VideoStaticFeature.floatMediaExposure 浮层媒体号曝光
+    int32 float_media_click = 26;
+    //videofeature::VideoStaticFeature.floatMediaClick 浮层媒体号点击
+    int32 main_subject_total_play_time = 27;
+    //videofeature::VideoStaticFeature.mainSubjectTotalPlayTime 看热点主题累计播放时长
+    int32 main_subject_click = 28;
+    //videofeature::VideoStaticFeature.mainSubjectClick 看热点主题点击
+    float main_subject_avg_complete_ratio = 29;
+    //videofeature::VideoStaticFeature.mainMediaAvgCompleteRatio 看热点主题平均播放完成率
+}
+
+message VideoAssembleFeature {
+    repeated BehaviorProperty behavior_propertys = 1;
+    //videofeature::VideoAssembleFeature.behaviorPropertyMap
+    //只保留了key=E_VDEIO_SCENE_MAIN的特征
+    repeated BehaviorProperty sim_assembles = 2;
+    //videofeature::VideoAssembleFeature.simAssembleMap 新相似度特征
+    //只保留了key=E_VDEIO_SCENE_MAIN的特征
+    repeated BehaviorPropertyPlayTime behavior_property_playtimes = 3;
+    //videofeature::VideoAssembleFeature.behaviorPropertyPlayTimeMap 时长组合特征
+    //只保留了key=E_VDEIO_SCENE_MAIN的特征
+}
+
+// 视频特征
+message VideoFeature {
+    VideoDynamicFeature dynamic_feature = 1;
+    VideoStaticFeature static_feature = 2;
+    VideoAssembleFeature assemble_feature = 3;
+}
+
+// 向量特征
+message EmbeddingFeature {
+    repeated float embeddings = 1;                              // 向量
+    repeated float first_embeddings = 2;                        // 按配置uk获取embedding特征
+    repeated float second_embeddings = 3;                       // 按配置uk获取embedding特征
+};
+
+
+message LatestHisItem {
+    int64 item_id = 1;
+    //NewsLatestHisItem.lItemId 内容id
+    int32 time = 2;
+    //NewsLatestHisItem.lTime 时间戳，单位：秒
+    int32 bussiness_type = 3;
+    //NewsLatestHisItem.bussinessType 业务类型[1-图文;2-视频;3-图集;4-图文运营;5-视频运营;6-直播;7-搞笑;8-小说]
+    bool is_click = 4;
+    //NewsLatestHisItem.bIsClick 是否点击
+    int64 click_time = 5;
+    //NewsLatestHisItem.lClickTime 点击时间戳
+    int32 item_time = 6;
+    //NewsLatestHisItem.itemTime 内容时长[s]
+    int32 play_time = 7;
+    //NewsLatestHisItem.playTime 浏览/观看时长[s]
+    NewsFeature news_feature = 8;
+    //对应的doc特征
+    VideoFeature video_feature = 9;
+    //对应的doc特征
+    repeated float news_semantic_features = 10;
+    //对应的ItemBase32维向量
+    repeated float video_semantic_features = 11;
+    //对应的ItemBase32维向量
+}
+
+message NewsClickOnce {
+    int64 doc_id = 1;
+    //NewsHistory::ClickHistory.clicks.docid 
+    int64 uptime = 2;
+    //NewsHistory::ClickHistory.clicks.uptime
+    int64 tag_id = 3;
+    //NewsHistory::ClickHistory.clicks.tagid
+    NewsFeature news_feature = 4;
+    //对应的doc特征
+}
+
+message VideoClickOnce {
+    int64 doc_id = 1;
+    //VideoHistory::ClickHistory.docid
+    int64 uptime = 2;
+    //VideoHistory::ClickHistory.uptime
+    int32 playtime = 3;
+    //VideoHistory::ClickHistory.lPlayTime
+    VideoFeature video_feature = 4;
+    //对应的doc特征
+};
+
+//用户session级别特征
+message SessionFeature {
+    repeated LatestHisItem recent_epo_items = 1;
+    //vLatestHisItems 最近100篇文章历史
+    repeated LatestHisItem real_recent_epo_items = 2;
+    //vRealLatestHisItems 真实曝光历史500篇
+    repeated NewsClickOnce news_clk_items = 3;
+    //newsClickHistory 图文点击序列
+    repeated VideoClickOnce float_video_clk_items = 4;
+    //videoClickHistory 短视频浮层点击序列
+    repeated VideoClickOnce float_minivideo_clk_items = 5;
+    //miniVideoClickHistory 小视频浮层点击序列
+    repeated VideoClickOnce feed_video_clk_items = 6;
+    //videoFeedsClickHistory 短视频feeds点击序列
+    repeated VideoClickOnce feed_minivideo_clk_items = 7;
+    //miniVideoFeedsClickHistory 小视频feeds点击序列
+}
+
+
+// 环境信息
+message RequestFeature {
+    string guid = 1;
+    //QBREC::NewsEnvParam.sGuid  用户guid
+    string query_id = 2;
+    //QBREC::NewsEnvParam.sQueryId  请求的标识ID,方便查找
+    int32 apn_type = 3;
+    //QBREC::NewsEnvParam.iApnType  网络类型，0:未知, 1:2G, 2:3G, 3:4G, 4:WIFI
+    int32 flush_num = 4;
+    //QBREC::NewsEnvParam.stReqArgs.iFlushNum  当前第几刷
+    int64 user_register_time = 5;
+    //QBREC::NewsEnvParam.stReqArgs.lUsrRegisterTime  用户首次注册时间
+    int32 forward = 6;
+    //QBREC::NewsEnvParam.stReqArgs.iForward  来源自req_ext_soso，KB侧（0:下拉, 1:上拉），QB侧（1:刷新, 2:加载更多）
+    int32 user_last_request_time = 7;
+    //QBREC::NewsEnvParam.stReqArgs.lUserLastRequestTime  QB用户最后一次请求的时间（秒）（-1 代表第一次请求，按自然日更新）
+    repeated int32 bucket_testids = 8;
+    // 实验编号 即灰度id
+}
+
+
+//召回位置信息
+message RecallStrategyRankInfo {
+    int32 recall_strategy = 1;
+    //RecallStrategyRankInfo.recallStrategy 召回策略
+    int32 pos = 2;
+    //RecallStrategyRankInfo.pos 在召回中的位置。从0开始，无效值为-1
+    int32 recall_size = 3;
+    //RecallStrategyRankInfo.recall_size 该召回返回给粗排的量
+}
+
+message RecommendFeature {
+    double rank_score = 2;
+    //newsfeature::DocDataInfo.dRankScore 粗排打分
+    repeated int32 strategys = 3;
+    //newsfeature::DocDataInfo.vStrategy 文章召回策略
+    repeated RecallStrategyRankInfo strategy_rankinfos = 4;
+    //newsfeature::DocDataInfo.vRecallStrategyRankInfo 文章召回位置
+    double ctrpred_score = 5;
+    //newsfeature::DocDataInfo.dCtrPred 精排打分
+    double rerank_score = 6;
+    //newsfeature::DocDataInfo.dRerankPredCtr 混排打分
+}
+
+message DocFeature {
+    NewsFeature news_feature = 1;
+    // 图文doc特征
+    VideoFeature video_feature = 2;
+    // 视频doc特征
+    repeated float semantic_features = 3;
+    // ItemBase32维向量
+    EmbeddingFeature embedding_feature = 4;
+    // 向量特征
+}
+
+message UserFeedBack {
+    bool show = 1;
+    // 真实曝光
+    int32 show_timestamp = 2;
+    // 曝光时间
+    bool click = 3;
+    // 点击
+    int32 click_timestamp = 4;
+    // 点击时间
+    int64 play_time = 5;
+    // 阅读时长/播放时长
+}
+
+message ContentFeature {
+    uint64 doc_id = 1;
+    int32 doc_type = 2;
+    // 1:图文  2:视频
+    RecommendFeature recommend_feature = 3;
+    DocFeature doc_feature = 4;
+    UserFeedBack feed_back = 5;
+}
+
+
+
