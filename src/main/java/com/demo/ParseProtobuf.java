@@ -10,8 +10,8 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  *
- * 对字符串进行加解密和加解压
- * @author wujh
+ * 解析加密protobuf样本
+ * @author ericoliang
  *
  */
 @SuppressWarnings("restriction")
@@ -48,7 +48,7 @@ public class ParseProtobuf {
      * @return
      */
 
-    public static byte[] DecompressToBase64(String textToDecode){
+    public static byte[] DecompressFromBase64(String textToDecode){
         //String textToDecode = "H4sIAAAAAAAAAPNIzcnJBwCCidH3BQAAAA==\n";
         try {
             byte[] compressed = Base64.getDecoder().decode(textToDecode);
@@ -71,8 +71,9 @@ public class ParseProtobuf {
         return new byte[0];
     }
 
-    public static String ParseProtobufStruct(byte[] pbStruct){
+    public static String ParseProtobufStruct(String pbString){
         try {
+            byte[] pbStruct = DecompressFromBase64(pbString);
             SampleOuterClass.Sample mySample = SampleOuterClass.Sample.parseFrom(pbStruct);
             return mySample.getRequestFeature().getGuid();
         } catch (InvalidProtocolBufferException e){
@@ -82,26 +83,26 @@ public class ParseProtobuf {
     }
 
 
-    public static void main(String[] args) {
-        try {
-            String encoding = "utf-8";
-            File file = new File("src/main/java/com/demo/sample.txt");
-            if (file.isFile() && file.exists()) { // 判断文件是否存在
-                InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);// 考虑到编码格式
-                BufferedReader bufferedReader = new BufferedReader(read);
-                String lineTxt = null;
-                while ((lineTxt = bufferedReader.readLine()) != null) {
-                    String result = ParseProtobufStruct(DecompressToBase64(lineTxt));
-                    System.out.println(result);
-                }
-                bufferedReader.close();
-                read.close();
-            } else {
-                System.out.println("找不到指定的文件");
-            }
-        } catch (Exception e) {
-            System.out.println("读取文件内容出错");
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            String encoding = "utf-8";
+//            File file = new File("src/main/java/com/demo/sample.txt");
+//            if (file.isFile() && file.exists()) { // 判断文件是否存在
+//                InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);// 考虑到编码格式
+//                BufferedReader bufferedReader = new BufferedReader(read);
+//                String lineTxt = null;
+//                while ((lineTxt = bufferedReader.readLine()) != null) {
+//                    String result = ParseProtobufStruct(lineTxt);
+//                    System.out.println(result);
+//                }
+//                bufferedReader.close();
+//                read.close();
+//            } else {
+//                System.out.println("找不到指定的文件");
+//            }
+//        } catch (Exception e) {
+//            System.out.println("读取文件内容出错");
+//            e.printStackTrace();
+//        }
+//    }
 }
